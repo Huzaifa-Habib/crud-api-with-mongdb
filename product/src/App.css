@@ -5,15 +5,12 @@ body{
   padding: 0px;
   font-family: 'Roboto', sans-serif;
   background-color: rgba(128, 128, 128, 0.144);
-
-
-}
-
-/* .main-div{
   overflow: hidden;
-  height: calc(100vh);
-
-} */
+}
+.table{
+  overflow-y: scroll;
+  height: calc(28vh);
+}
 
 
 .input-div{
@@ -29,7 +26,7 @@ body{
   padding-right: 10px;
   margin-bottom: 40px;
   padding-bottom: 10px;
-  margin-top: 10%;
+
 }
 
 .input-div input,textarea{
@@ -116,7 +113,7 @@ table tbody tr td:nth-child(4) button:nth-child(1){
 
 }
 
-table tbody tr td:nth-child(4) button{
+table tbody tr td:nth-child(3) button{
   background-color: yellow;
   font-weight: bold;
   color: black;
@@ -129,7 +126,7 @@ table tbody tr td:nth-child(4) button{
 
 }
 
-table tbody tr td:nth-child(4) button:nth-child(3){
+table tbody tr td:nth-child(3) button:nth-child(3){
   margin-left: 10px;
 }
 
@@ -190,10 +187,28 @@ table tbody tr td:nth-child(4) button:nth-child(3){
 }
 
 
+.spinner-div{
+  position: absolute;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.171);
+  height: calc(100vh);
+  width: calc(100vw);
+  display: none;
+
+
+
+}
+
+.spinner{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20%;
+}
+
 @media screen and (max-width:680px)  {
   .input-div{
     width: calc(80vw);
-    margin-top: 15%;
   }
 
   
@@ -202,7 +217,6 @@ table tbody tr td:nth-child(4) button:nth-child(3){
 @media screen and (max-width:420px)  {
   .input-div{
     width: calc(95vw);
-    margin-top: 20%;
   }
 
   .btn{

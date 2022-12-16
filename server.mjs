@@ -8,7 +8,7 @@ import mongoose from"mongoose"
 
 const app = express()
 const port = process.env.PORT || 3000
-const mongodbURI = process.env.mongodbURI || "mongodb+srv://Huzaifa:mypassword@cluster0.vpuj8pq.mongodb.net/mydatabase?retryWrites=true&w=majority"
+const mongodbURI = process.env.mongodbURI || "mongodb+srv://admin:admin123@cluster0.vpuj8pq.mongodb.net/mydatabase?retryWrites=true&w=majority"
 mongoose.connect(mongodbURI);
 app.use(cors());
 app.use(express.json());
@@ -75,66 +75,78 @@ app.post('/product', (req, res) => {
 })
 
 app.get('/products', (req, res) => {
-    res.send({
-        message: "got all products successfully",
-        data: products
-    })
+    myProductModel.find({}, (err, data) => {
+        if (!err) {
+            res.send({
+                message: "got all products successfully",
+                data: data
+            })
+        } else {
+            res.status(500).send({
+                message: "server error"
+            })
+        }
+    });
+ 
 })
 app.get('/product/:id', (req, res) => {
 
-    const id = Number(req.params.id);
+    const id = req.params.id;
 
-    let isFound = false;
-    for (let i = 0; i < products.length; i++) {
-
-        if (products[i].id === id) {
-            res.send({
-                message: `get product by id: ${products[i].id} success`,
-                data: products[i]
-            });
-
-            isFound = true
-            break;
+    myProductModel.findOne({ _id: id }, (err, data) => {
+        if (!err) {
+            if (data) {
+                res.send({
+                    message: `get product by id: ${data._id} success`,
+                    data: data
+                });
+            } else {
+                res.status(404).send({
+                    message: "product not found",
+                })
+            }
+        } else {
+            res.status(500).send({
+                message: "server error"
+            })
         }
-    }
-    if (isFound === false) {
-        res.status(404)
-        res.send({
-            message: "product not found"
-        });
-    }
-    return;
+    });
 })
 
 app.delete('/product/:ids', (req, res) => {
-    const id = Number(req.params.ids);
+    const id =req.params.ids;
+    myProductModel.deleteOne({ _id: id }, (err, deletedData) => {
+        console.log("deleted: ", deletedData);
+        if (!err) {
 
-    let isFound = false;
-    for (let i = 0; i < products.length; i++) {
-        if (products[i].id === id) {
-            products.splice(i, 1);
-            res.send({
-                message: "product deleted successfully",
-            });
-            isFound = true
-            break;
+            if (deletedData.deletedCount !== 0) {
+                res.send({
+                    message: "Product has been deleted successfully",
+                })
+            } else {
+                res.status(404);
+                res.send({
+                    message: "No Product found with this id: " + id,
+                });
+            }
+        } else {
+            res.status(500).send({
+                message: "server error"
+            })
         }
-    }
-    if (isFound === false) {
-        res.status(404)
-        res.send({
-            message: "delete fail: product not found"
-        });
-    }
+    });
+
+
+    
 })
 
-app.put('/product/:editId', (req, res) => {
+app.put('/product/:editId', async (req, res) => {
 
     const body = req.body;
-    const id =  Number(req.params.editId);
+    const id = req.params.editId;
 
     if ( // validation
-        !body.names
+        !body.name
         && !body.price
         && !body.description
     ) {
@@ -144,30 +156,27 @@ app.put('/product/:editId', (req, res) => {
         return;
     }
 
-    let isFound = false;
-    for (let i = 0; i < products.length; i++) {
-        if (products[i].id === id) {
+    try {
+        let data = await myProductModel.findByIdAndUpdate(id,
+            {
+                name: body.name,
+                price: body.price,
+                description: body.description
+            },
+            { new: true }
+        ).exec();
 
-            products[i].names = body.names;
-            products[i].price = body.price;
-            products[i].description = body.description;
+        console.log('updated: ', data);
 
-            res.send({
-                message: "product modified successfully"
-            });
-            isFound = true
-            break;
-        }
-    }
-    if (!isFound) {
-        res.status(404)
         res.send({
-            message: "edit fail: product not found"
+            message: "product modified successfully"
         });
+
+    } catch (error) {
+        res.status(500).send({
+            message: "server error"
+        })
     }
-    res.send({
-        message: "product added successfully"
-    });
 })
 
 

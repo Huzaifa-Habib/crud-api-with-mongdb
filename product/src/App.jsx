@@ -4,13 +4,14 @@ import axios from "axios"
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
 import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Navbar from 'react-bootstrap/Navbar';
+import Spinner from 'react-bootstrap/Spinner';
+
 
 
 
@@ -38,8 +39,39 @@ function App() {
   const [show1, setShow1] = useState(false);
 
   const handleClose = () => setShow1(false);
-  // const handleShow = () => setShow(true);
   const [loadProduct, setLoadProduct] = useState(false)
+
+  const [isSpinner, setIsSpinner] = useState(null)
+
+  if (isSpinner === true) {
+    document.querySelector(".spinner-div").style.display = "block"
+    
+  }
+  if (isSpinner === false) {
+    document.querySelector(".spinner-div").style.display = "none"
+
+
+    
+  }
+
+
+
+ 
+
+  
+
+  
+
+
+
+
+
+
+
+
+
+
+
   
 
 
@@ -66,40 +98,36 @@ function App() {
     .then((response) => {
       console.log(response);
       setData(response.data.data)
-      setLoadProduct(!loadProduct)
-      alertHandler()
+      setIsSpinner(true)
+      setTimeout(() => {
+        setIsSpinner(false);
+        setLoadProduct(!loadProduct)
+
+    }, 3000);
+      
+  
+ 
+     
+      // alertHandler()
 
      
     }, (error) => {
       console.log(error);
     });
+      
 
 
 
   }
 
-  const alertHandler = () =>{
-    let alerta = document.getElementById("alert")
-    alerta.style.display="block"
 
-
-
-  }
-
-  const successHandler = () =>{
-    let alerta = document.getElementById("alert")
-    alerta.style.display="none"
-
-
-
-  }
 
   const allProductsHandler=()=>{
     axios.get(`${baseUrl}/products`)
     .then((response) => {
       console.log(response);
       setAllData(response.data.data)
-     
+ 
     }, (error) => {
       console.log(error);
     });
@@ -115,8 +143,14 @@ function App() {
     axios.delete(`${baseUrl}/product/${ids}`)
     .then(response => {
       console.log("response: ", response);
-      alert("Product Deleted Successfully")
-      setLoadProduct(!loadProduct)
+      setIsSpinner(true)
+      setTimeout(() => {
+        setIsSpinner(false);
+        setLoadProduct(!loadProduct)
+    }, 2000);
+
+
+      
      
 
     })
@@ -128,10 +162,9 @@ function App() {
   }
 
   const handleData = async (id,names,price,desc) =>{
-    
-      
-  
     setShow(true)
+    setLoadProduct(!loadProduct)
+
 
     // setEditId(id)
     // setEditName(names)
@@ -153,14 +186,19 @@ function App() {
 
 
       axios.put(`${baseUrl}/product/${editId}`,{
-      names:productName ,
+      name:productName ,
       price: productPrice  ,
       description: productDesc
 
     })
     .then((response) => {
       console.log(response);
-      setLoadProduct(!loadProduct)
+      setIsSpinner(true)
+      setTimeout(() => {
+        setIsSpinner(false);
+        setLoadProduct(!loadProduct)
+
+    }, 3000);
      
     }, (error) => {
       console.log(error);
@@ -191,7 +229,6 @@ function App() {
   useEffect(() => {
 
     allProductsHandler()
-
   }, [loadProduct])
 
   let emptyError = document.querySelector(".emptyError")
@@ -279,8 +316,13 @@ function App() {
 
   return (
     <div className='main-div'>
+      <div className='spinner-div'>
+        <div className='spinner'>
+        <Spinner animation="grow" variant="danger" />
+        </div>
+      </div>
       <div className='nav-div' >
-          <Navbar bg="dark" expand="lg" fixed="top">
+          <Navbar bg="dark" expand="lg">
             <Container fluid className='nav' >
               <Navbar.Brand className='nav-a'>Product App</Navbar.Brand>
               <Navbar.Toggle aria-controls="navbarScroll" />
@@ -294,7 +336,7 @@ function App() {
                 </Nav>
                 <Form className="d-flex">
                      <Form.Control
-                        type="number"
+                        type="text"
                         placeholder='Enter Product Id'
                         className="me-2"
                         aria-label="Search"
@@ -319,28 +361,7 @@ function App() {
   
 
   
-       {/* <div className='alert-div' id='alert'>
-        <div className='show-alert'>
-          <Alert variant="success">
-            <Alert.Heading>Hurrah!</Alert.Heading>
-            <p>
-              You have successfully added the product. Your product details are: <br /> <br />
-              Name: {data?.names} <br />
-              Price: {data?.price} <br />
-              Description: {data?.description}
-        
-            </p>
-            <hr />
-            <div className="d-flex justify-content-end">
-              <Button onClick={successHandler} variant="outline-success">
-                Ok.
-              </Button>
-            </div>
-          </Alert>
-        </div>
-
-    
-      </div> */}
+   
      
 
       <div className='input-div'>
@@ -362,24 +383,8 @@ function App() {
         </form>
       </div>
 
-      <div className='onSearchDisplay'>
-       
-
-        {/* <button onClick={getProductHandlerOnId}>
-          Get
-
-        </button> */}
-
-      </div>
-
-
-        
-
-
-
-
-
       <div className='display-div' id='display'>
+
 
 
         {
@@ -391,7 +396,6 @@ function App() {
                     <Table responsive="xl"  striped bordered hover variant="dark"  >
                       <thead>
                         <tr>
-                          <th>#ID</th>
                           <th>Product Name</th>
                           <th>Product Price</th>
                           <th>Description</th>
@@ -401,18 +405,17 @@ function App() {
                       
                      <tbody key={i}>
                         <tr>
-                          <td>{eachData?.id}</td>
                           <td>{eachData?.name}</td>
                           <td>Rs.{eachData?.price}</td>
                           <td>{eachData?.description} <br />
                           <button onClick={()=>{
-                            deleteProductHandler(eachData?.id)
+                            deleteProductHandler(eachData?._id)
 
                           }}>Delete</button>
 
                           <button onClick={()=>{
                           handleData(
-                            setEditId(eachData.id),
+                            setEditId(eachData?._id),
                             setEditName(eachData?.name),
                             setEditPrice(eachData?.price),
                             setEditDesc(eachData?.description)
@@ -509,7 +512,7 @@ function App() {
             </Modal.Header>
             <Modal.Body>
              
-             <p>Name: {searchData?.names}</p>
+             <p>Name: {searchData?.name}</p>
              <p>Price: {searchData?.price}</p>
              <p>Description: {searchData?.description}</p>
 
