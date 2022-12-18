@@ -9,3 +9,10 @@ self.addEventListener("message", (event) => {
     self.skipWaiting();
   }
 });
+
+workbox.routing.registerRoute(
+  new RegExp('/*'),
+  new workbox.strategies.StaleWhileRevalidate({
+    cacheName: CACHE
+  })
+);
