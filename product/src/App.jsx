@@ -13,6 +13,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Spinner from 'react-bootstrap/Spinner';
 import edit from "./assets/pencil.png";
 import deletes from "./assets/delete.png";
+import {useRef} from 'react';
 
 
 
@@ -45,6 +46,11 @@ function App() {
   const [loadProduct, setLoadProduct] = useState(false)
 
   const [isSpinner, setIsSpinner] = useState(null)
+  const firstRef = useRef(null);
+  const secondRef = useRef(null);
+  const lastRef = useRef(null);
+
+  
 
   if (isSpinner === true) {
     document.querySelector(".spinner-div").style.display = "block"
@@ -101,24 +107,23 @@ function App() {
     .then((response) => {
       console.log(response);
       setData(response.data.data)
-
       setIsSpinner(true)
+      productPrice = null
       setTimeout(() => {
         setIsSpinner(false);
         setLoadProduct(!loadProduct)
-
-
-    }, 3000);
+    }, 2000);
+    event.target.reset();
     }, (error) => {
       console.log(error);
     });
 
-
-      
-
-
-
   }
+
+  // const clearValues = () =>{
+  //   document.getElementById("name").value = ""
+
+  // }
 
 
 
@@ -133,9 +138,12 @@ function App() {
     });
 
  
-
-
   }
+
+  
+  useEffect(() => {
+    allProductsHandler()
+  }, [loadProduct])
 
 
   const deleteProductHandler = (ids) =>{
@@ -147,7 +155,8 @@ function App() {
       setTimeout(() => {
         setIsSpinner(false);
         setLoadProduct(!loadProduct)
-    }, 2000);
+
+    }, 1000);
 
 
       
@@ -194,11 +203,12 @@ function App() {
     .then((response) => {
       console.log(response);
       setIsSpinner(true)
+      setLoadProduct(!loadProduct)
+
       setTimeout(() => {
         setIsSpinner(false);
-        setLoadProduct(!loadProduct)
 
-    }, 3000);
+    }, 1500);
      
     }, (error) => {
       console.log(error);
@@ -226,10 +236,6 @@ function App() {
 
   }
 
-  useEffect(() => {
-
-    allProductsHandler()
-  }, [loadProduct])
 
   let emptyError = document.querySelector(".emptyError")
   let lengthError = document.querySelector(".lengthError")
@@ -366,18 +372,18 @@ function App() {
 
       <div className='input-div'>
         <form onSubmit={submitHandler}>
-          <input type="text" name="productName" id="name" placeholder='Enter Product Name ' required onBlur={nameHandler} onChange={nameError}  /> <br />
+          <input type="text" ref={firstRef}  name="productName" id="name" placeholder='Enter Product Name ' required onBlur={nameHandler} onChange={nameError}  /> <br />
           <span className='emptyError'>Don't leave field empty!</span>
           <span className='lengthError'>Your Value should be greater than two characters</span>
 
 
-          <input type="number" name="price" id="price" placeholder='Enter Product Price' required  /> <br />
+          <input type="number" ref={secondRef} name="price" id="price" placeholder='Enter Product Price' required  /> <br />
 
-          <textarea name="description" rows={3} placeholder='Enter Product Description...' required maxLength={500} onBlur={descHandler} onChange={descLengthError}></textarea>
+          <textarea name="description" ref={lastRef} id='desc' rows={3} placeholder='Enter Product Description...' required maxLength={500} onBlur={descHandler} onChange={descLengthError}></textarea>
           <span className='descEmptyError'>Don't leave field empty!</span>
           <span className='descLengthError'>Your Value should be greater than two characters</span>
 
-          <Button variant="outline-success" type='submit' className='btn' >Add Product</Button>
+          <Button variant="outline-success" type='submit' className='btn'  >Add Product</Button>
 
 
         </form>
