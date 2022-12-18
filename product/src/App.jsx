@@ -11,6 +11,9 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Navbar from 'react-bootstrap/Navbar';
 import Spinner from 'react-bootstrap/Spinner';
+import edit from "./assets/pencil.png";
+import deletes from "./assets/delete.png";
+
 
 
 
@@ -370,7 +373,7 @@ function App() {
 
           <input type="number" name="price" id="price" placeholder='Enter Product Price' required  /> <br />
 
-          <textarea name="description" id="" cols="80" rows="5" placeholder='Enter Product Description...' required maxLength={500} onBlur={descHandler} onChange={descLengthError}></textarea>
+          <textarea name="description" rows={3} placeholder='Enter Product Description...' required maxLength={500} onBlur={descHandler} onChange={descLengthError}></textarea>
           <span className='descEmptyError'>Don't leave field empty!</span>
           <span className='descLengthError'>Your Value should be greater than two characters</span>
 
@@ -405,12 +408,12 @@ function App() {
                           <td>{eachData?.name}</td>
                           <td>Rs.{eachData?.price}</td>
                           <td>{eachData?.description} <br />
-                          <button onClick={()=>{
+                          <img src={deletes} title="Delete" width="30" height="30" onClick={()=>{
                             deleteProductHandler(eachData?._id)
 
-                          }}>Delete</button>
+                          }}/>
 
-                          <button onClick={()=>{
+                          <img src={edit} title="Edit"  width="30" height="30" onClick={()=>{
                           handleData(
                             setEditId(eachData?._id),
                             setEditName(eachData?.name),
@@ -418,7 +421,7 @@ function App() {
                             setEditDesc(eachData?.description)
                         )
 
-                          }}>Update</button>
+                          }}/>
 
 
 
