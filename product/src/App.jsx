@@ -98,22 +98,19 @@ function App() {
     .then((response) => {
       console.log(response);
       setData(response.data.data)
+
       setIsSpinner(true)
       setTimeout(() => {
         setIsSpinner(false);
         setLoadProduct(!loadProduct)
 
-    }, 3000);
-      
-  
- 
-     
-      // alertHandler()
 
-     
+    }, 3000);
     }, (error) => {
       console.log(error);
     });
+
+
       
 
 
